@@ -42,11 +42,15 @@ func (dc defaultClient) NewImageName() (fullName string, name string) {
 
 func (dc defaultClient) Validate(fileHandle io.Reader) error {
 
-	reader := io.LimitReader(fileHandle, maxAttachmentSize)
+	reader := io.LimitReader(fileHandle, maxAttachmentSize + 1 )
 	attachmentFileBytes, err := ioutil.ReadAll(reader)
 
 	if err != nil {
 		return err
+	}
+
+	if len(attachmentFileBytes) > maxAttachmentSize {
+		return errors.New("image file is too large")
 	}
 
 	fType, err := filetype.Image(attachmentFileBytes)
